@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-  
+
 from pathlib import Path
 import pymysql
 pymysql.install_as_MySQLdb()
@@ -22,12 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-8v!=gxz7c8!*m-#quxwzq7gexdo%hi)tub)jbtfe!n#e2228u0'
+SECRET_KEY = 'django-insecure-yd-26zm5ychdft*52*dc+jh91+%lub&-$z*^ps4wkwui4x7-eu'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1','localhost']
 
 
 # Application definition
@@ -41,7 +41,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app',
     'users',
-] 
+    'productos',
+    'categorias',
+    'alumnos',
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'corsheaders',
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -51,7 +57,16 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+
+#Constante prohibida
+CORS_ALLOW_ALL_ORIGINS = True #<-- Permitir la conexion desde cualquier origen en la app
+
+#CORS_ALLOW_ORIGINS = [
+ #   'http://localhost:8000/',
+  #  'http://localhost:5173/'
+#]
 
 ROOT_URLCONF = 'errorPages.urls'
 
@@ -79,8 +94,12 @@ WSGI_APPLICATION = 'errorPages.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',  # Motor de base de datos
+        'NAME': 'bdMiguel',           # Nombre de la base de datos
+        'USER': 'root',                 # Usuario de la base de datos
+        'PASSWORD': 'root',           # Contraseña del usuario
+        'HOST': 'localhost',                  # Dirección del servidor de BD
+        'PORT': '3306',                       # Puerto de MySQL (por defecto 3306)
     }
 }
 
@@ -126,34 +145,28 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Que hará Django cuando pase un 404
-HANDLER404 = 'app.views.show_error_404'
+#QUE HARÁ DJANGO CUANDO PASE UN ERROR 404
+HANDLER404= 'app.views.show_error_404'
 
-# Que hará Django cuando pase un 500
-HANDLER500 = 'app.views.show_error_500'
+#QUE HARÁ DJANGO CUANDO PASE UN ERROR 500
+HANDLER500= 'app.views.show_error_500'
 
-#Llave de API
-SEARCH_API_KEY = ''
+SEARCH_API_KEY= 'AIzaSyAICFgA1g650kQMMF2hPLdJWYsNoZ8hH-E'
 
-#Este Id va de la mano con la API
-SEARCH_ENGINE_ID = ''
+SEARCH_ENGINE_ID= '1434a933ba8df424f'
 
-#Variable para BD
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'mi_base_de_datos',
-        'USER': 'root',
-        'PASSWORD': 'root',
-        'HOST': 'localhost',
-        'PORT': '3306'
-    }
+AUTH_USER_MODEL= 'users.CustomUser'
+
+LOGIN_URL = '/users/login/'
+LOGIN_REDIRECT_URL = '/home' # Dónde irán los usuarios tras iniciar sesión
+LOGOUT_REDIRECT_URL = '/users/login/'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES' : (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
 }
 
-#Variable de usuario
+#Decirle a DJango quien se va a autentificar
 AUTH_USER_MODEL = 'users.CustomUser'
 
-# Dónde irán los usuarios tras iniciar sesión
-LOGIN_URL = '/users/login/'
-LOGIN_REDIRECT_URL = '/home' 
-LOGOUT_REDIRECT_URL = '/users/login/'

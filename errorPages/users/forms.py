@@ -3,98 +3,93 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser
 from django.contrib.auth.forms import AuthenticationForm
 
+#Primer formulario
 class CustomUserCreationForm(UserCreationForm):
+    password1 = forms.CharField(
+        label='Contraseña',
+        widget = forms.PasswordInput(
+            attrs = {
+                'class':'form-control',
+                'pattern': '^(?=.*\d)(?=.*[A-Z])(?=.*[!#$%&?]).{8,}$',
+                'placeholder': 'Ingrese su contraseña',
+                'title': 'Necesitas definir una contraseña segura: Al menos un número.\nAl menos una letra mayúscula.\nAl menos un carácter especial (!#$%&?).\nMínimo de 8 caracteres en total.',
+                'required': True
+            }
+        )
+    )
+    ##password2
+    password2 = forms.CharField(
+        label='Repite tu Contraseña',
+        widget = forms.PasswordInput(
+            attrs = {
+                'class':'form-control',
+                'pattern': '^(?=.*\d)(?=.*[A-Z])(?=.*[!#$%&?]).{8,}$',
+                'placeholder': 'Repita su contraseña',
+                'title': 'Necesitas definir una contraseña segura',
+                'required': True
+            }
+        )
+    )
+
     class Meta:
         model = CustomUser
-        fields = ['email', 'name', 'surname', 'control_number', 'age', 'tel', 'password1', 'password2']
+        fields = ['email', 'name', 'surname', 'control_number', 'age', 'tel','password1', 'password2']
+
+        #Si quiero editar la forma de los inputs necesito widgets
         widgets = {
+            #Cada uno de los widgets del **MODELO**
             'email': forms.EmailInput(
-                attrs={
-                    'class': 'form-control',
-                    'placeholder': 'Correo electrónico',
+                #Caracteristicas del elemento visual
+                attrs = {
+                    'class':'form-control',
                     'required': True,
                     'pattern': '^[a-zA-Z0-9]+@utez\.edu\.mx$',
-                    'title': 'Ingresa tu correo electrónico'
+                    'title': 'Debes ingresar un correo electrónico valido de la UTEZ'
                 }
             ),
             'name': forms.TextInput(
                 attrs={
-                    'class': 'form-control',
-                    'placeholder': 'Nombre(s)',
-                    'required': True,
-                    'title': 'Ingresa tu nombre'
+                    'class':'form-control',
+                    'required': True
                 }
             ),
             'surname': forms.TextInput(
                 attrs={
-                    'class': 'form-control',
-                    'placeholder': 'Apellido(s)',
-                    'required': True,
-                    'title': 'Ingresa tu apellido'
+                    'class':'form-control',
+                    'required': True
                 }
-            ), 
+            ),
             'control_number': forms.TextInput(
                 attrs={
-                    'class': 'form-control',
-                    'placeholder': 'Matrícula',
+                    'class':'form-control',
                     'required': True,
-                    'pattern': '^\d{5}[a-zA-Z]{2}\d{3}$',
-                    'title': 'Ingresa tu matrícula'
+                    'pattern': '^[0-9]{5}[a-zA-Z]{2}[0-9]{3}$',
+                    'title': 'Necesitas ingresar una matricula valida de la UTEZ',
+                    'maxlength': '20'
                 }
             ),
             'age': forms.NumberInput(
                 attrs={
-                    'class': 'form-control',
-                    'placeholder': 'Edad',
+                    'class':'form-control',
                     'required': True,
-                    'min': '0',
-                    'max': '120',
-                    'pattern': '^[0-9]{3}$',
-                    'title': 'Ingresa tu edad'
+                    'pattern': '^[0-9]+$',
+                    'title': 'Ingrese solo numeros',
+                    'max': '100',
+                    'min': '1'
                 }
             ),
             'tel': forms.TextInput(
                 attrs={
-                    'class': 'form-control',
-                    'placeholder': 'Teléfono',
+                    'class':'form-control',
                     'required': True,
-                    'maxlength': '10', 
-                    'pattern': '^[0-9]{10}$', 
-                    'title': 'Ingresa un número de teléfono válido de 10 dígitos'
+                    'pattern': '^[0-9\+-]{10,}$',
+                    'title': 'Ingrese solo numeros',
+                    'maxlength': '15'
                 }
-            ),
-
-            'password1': forms.PasswordInput(
-                attrs={
-                    'class': 'form-control',
-                    'placeholder': 'Contraseña',
-                    'required': True,
-                    'title': 'Ingresa tu contraseña'
-                }
-            ),
-            'password2': forms.PasswordInput(
-                attrs={
-                    'class': 'form-control',
-                    'placeholder': 'Contraseña',
-                    'required': True, 
-                    'title': 'Repite la contraseña'
-                }
-            ),
+            )
         }
 
+
+#Segundo formulario (inicio de sesión)
 class CustomUserLoginForm(AuthenticationForm):
     pass
-
-class CustomLoginForm(AuthenticationForm):
-    email = forms.CharField(label="Correo electrónico", max_length=150)
-    password = forms.CharField(label="Contraseña", widget=forms.PasswordInput)
-
-    def clean(self):
-        cleaned_data = super().clean()
-        username = cleaned_data.get("username")
-        password = cleaned_data.get("password")
-        if username and password:
-            user = authenticate(username=username, password=password)
-            if not user:
-                raise forms.ValidationError("Usuario o contraseña incorrectos.")
-        return cleaned_data
